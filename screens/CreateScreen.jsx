@@ -5,12 +5,12 @@ import { Context } from '../context/ToDoContext'
 
 const CreateScreen = ({navigation}) => {
 
-  const { addToDoPost } = useContext(Context)
+  const { addToDoPost, postToDoPost } = useContext(Context)
 
   return (
     <ToDoPostForm
       onSubmit={(title, content) => {
-        addToDoPost(title, content, () => {
+        postToDoPost(title, content, () => {
           navigation.navigate("Home Screen")
         })
       }}

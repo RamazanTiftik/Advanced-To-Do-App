@@ -1,11 +1,21 @@
 import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Context } from '../context/ToDoContext'
 import { Feather } from "@expo/vector-icons"
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
 
-  const { state, addToDoPost, deleteToDoPost } = useContext(Context)
+  const { state, addToDoPost, deleteToDoPost, getToDoPost } = useContext(Context)
+
+  //useEffect -> ekradaki veriyi bir kere çekmesini sağlıyor, fokus olduğunda
+  useEffect(() => {
+    getToDoPost()
+
+    navigation.addListener("focus", () => {
+      getToDoPost()
+    })
+    //sildikten sonra liste güncellenmiyor
+  }, [])
 
   return (
     <View>
@@ -14,16 +24,17 @@ const HomeScreen = ({navigation}) => {
         data={state}
         keyExtractor={(toDoPost) => toDoPost.id}
         renderItem={({ item }) => {
+          console.log("5 "+ item)
           return (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("Detail Screen", {id: item.id})
+                navigation.navigate("Detail Screen", { id: item.id })
               }}
             >
 
               <View style={styles.row}>
 
-                <Text style={styles.titleStyle}>{item.title}</Text>
+                <Text style={styles.titleStyle}>{item.name}</Text>
 
                 <TouchableOpacity
                   onPress={() => {
@@ -39,7 +50,7 @@ const HomeScreen = ({navigation}) => {
           )
         }}
       />
-      
+
     </View>
   )
 }
