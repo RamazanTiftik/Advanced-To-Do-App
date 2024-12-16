@@ -26,20 +26,69 @@ const toDoReducer = (state, action) => {
             })
 
         case "edit_toDoAction":
+            { console.log("editting") }
             return state.map((toDoPost) => { //mapleyerek içine giriyoruz
                 return toDoPost.id === action.payload.id ?  //şuanki elemanın id'si ile payload'daki aynı ise
                     action.payload : //payload'ın içindeki değerleri ata
                     toDoPost //değilse toDoPost yani elemanın kendisini dön
             })
 
+
+        //******GET******
+
+        //quest'lerin çekildiği yer
         case "get_toDoPosts":
-            console.log("4 ", action.payload);
-            const categories = action.payload.map((item) => ({
-                id: item.categoryId,
-                name: item.categoryName,
+            //alttaki dizinin elemanlarını id,name vs değiştereerk istediğin veriler kullanılabilir
+            const quests = action.payload.map((item) => ({
+                id: item.questsId,
+                title: item.title,
+                description: item.description,
+                categoryId: item.categoryId,
+                priorityId: item.priorityId,
+                status: item.status,
+                typeID: item.typeID,
+                startDate: item.startDate,
+                endDate: item.endDate,
+                questType: item.questType
             }));
-            console.log("Categories:", categories);
-            return categories;
+            return quests;
+
+
+        case "get_priority":
+            const prioritys = action.payload.map((item) => ({
+                priorityId: item.priorityId,
+                priorityName: item.priorityName,
+            }));
+            return prioritys;
+
+
+        case "get_categorys":
+            const categorys = action.payload.map((item) => ({
+                categoryId: item.categoryId,
+                categoryName: item.categoryName,
+                quests: item.quests
+            }));
+            return categorys;
+
+
+        case "get_timers":
+            const timers = action.payload.map((item) => ({
+                timersId: item.timersId,
+                time: item.time,
+                startTime: item.startTime,
+                endTime: item.endTime,
+                questsId: item.questsId
+            }));
+            return timers;
+
+
+        case "get_type":
+            const types = action.payload.map((item) => ({
+                typeID: item.typeID,
+                typeName: item.typeName,
+            }));
+            return types;
+
 
         default:
             return state
@@ -75,6 +124,7 @@ const editToDoPost = (dispatch) => {
 */
 
 //API
+/*
 const postToDoPost = (dispatch) => {
     return async (title, content, callback) => {
         const response = await jsonServer.post("/toDoPost", { title, content })
@@ -83,6 +133,57 @@ const postToDoPost = (dispatch) => {
         }
     }
 }
+*/
+
+const postToDoPost = (dispatch) => {
+    return async (categoryId, categoryName, quests, callback) => {
+        const response = await jsonServer.post("/api/Category", { categoryId, categoryName, quests })
+        if (callback) {
+            callback()
+        }
+    }
+}
+
+
+const postToDoCategory = (dispatch) => {
+    return async (categoryId, categoryName, quests, callback) => {
+        const response = await jsonServer.post("/api/Category", { categoryId, categoryName, quests })
+        if (callback) {
+            callback()
+        }
+    }
+}
+
+
+const postToDoType = (dispatch) => {
+    return async (typeID, typeName, callback) => {
+        const response = await jsonServer.post("/api/Type", { typeID, typeName })
+        if (callback) {
+            callback()
+        }
+    }
+}
+
+
+const postToDoPriority = (dispatch) => {
+    return async (priorityId, priorityName, callback) => {
+        const response = await jsonServer.post("/api/Priority", { priorityId, priorityName })
+        if (callback) {
+            callback()
+        }
+    }
+}
+
+
+const postToDoQuests = (dispatch) => {
+    return async (questsId, title, description, categoryId, priorityId, status, typeID, startDate, endDate, questType) => {
+        const response = await jsonServer.post("/api/Quests", { questsId, title, description, categoryId, priorityId, status, typeID, startDate, endDate, questType })
+        if (callback) {
+            callback()
+        }
+    }
+}
+
 
 const getToDoPost = (dispatch) => {
     /*
@@ -94,16 +195,9 @@ const getToDoPost = (dispatch) => {
     return async () => {
         try {
 
-            const response = await jsonServer.get("/api/Category/")
+            const response = await jsonServer.get("/api/Quests")
             console.log("Item:", response.data);
             dispatch({ type: "get_toDoPosts", payload: response.data })
-
-            /*
-            response.data.forEach((item) => {
-                console.log("Item:", item);
-                dispatch({ type: "get_toDoPosts", payload: item })
-            });
-            */
 
             /* if (dispatch) {
                  dispatch({ type: "get_toDoPosts", payload: response.data });
@@ -121,13 +215,28 @@ const getToDoPost = (dispatch) => {
 }
 
 const editToDoPost = (dispatch) => {
-    return async (id, title, content, callback) => {
-        await jsonServer.put(`/toDoPost/${id}`, { title, content })
+    return async (id, title, description, callback) => {
+        console.log("func")
+        try {
+            // Mevcut veriyi API'dan çek
+            const response = await jsonServer.get(`/api/Quests/${id}`);
+            const existingData = response.data;
 
-        dispatch({ type: "edit_toDoAction", payload: { id, title, content } })
-        if (callback) {
-            callback()
+            // Güncelle ve gönder
+            await jsonServer.put(`/api/Quests/${id}`, {
+                ...existingData,
+                title,
+                description
+            });
+
+            if (callback) {
+                callback()
+            }
+            
+        } catch (error) {
+            console.error("API isteğinde bir hata oluştu:", error.message)
         }
+
     }
 }
 

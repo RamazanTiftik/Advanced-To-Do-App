@@ -14,9 +14,9 @@ const EditScreen = ({ route, navigation }) => {
 
   return (
     <ToDoPostForm
-      initialValues={{ title: toDoPost.title, content: toDoPost.content }}
-      onSubmit={(title, content) => {
-        editToDoPost(id, title, content, () => {
+      initialValues={{ title: toDoPost.title, content: toDoPost.description }}
+      onSubmit={(title, description) => {
+        editToDoPost(id, title, description, () => {
           navigation.navigate("Home Screen")
         })
       }}
@@ -26,4 +26,9 @@ const EditScreen = ({ route, navigation }) => {
 
 export default EditScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  backgroundStyle: {
+    backgroundColor: "#f7f6f6",
+    flex: 1
+  }
+})

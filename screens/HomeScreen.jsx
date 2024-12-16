@@ -18,13 +18,13 @@ const HomeScreen = ({ navigation }) => {
   }, [])
 
   return (
-    <View>
+    <View style={styles.backgroundStyle}>
 
       <FlatList
         data={state}
         keyExtractor={(toDoPost) => toDoPost.id}
         renderItem={({ item }) => {
-          console.log("5 "+ item)
+
           return (
             <TouchableOpacity
               onPress={() => {
@@ -34,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
 
               <View style={styles.row}>
 
-                <Text style={styles.titleStyle}>{item.name}</Text>
+                <Text style={styles.titleStyle}>{item.title}</Text>
 
                 <TouchableOpacity
                   onPress={() => {
@@ -68,5 +68,9 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
 
+  },
+  backgroundStyle: {
+    backgroundColor: "#f7f6f6",
+    flex: 1
   }
 })
