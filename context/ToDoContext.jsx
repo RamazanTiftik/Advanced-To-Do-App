@@ -26,7 +26,7 @@ const toDoReducer = (state, action) => {
             })
 
         case "edit_toDoAction":
-            { console.log("editting") }
+            //{ console.log("editting") }
             return state.map((toDoPost) => { //mapleyerek içine giriyoruz
                 return toDoPost.id === action.payload.id ?  //şuanki elemanın id'si ile payload'daki aynı ise
                     action.payload : //payload'ın içindeki değerleri ata
@@ -70,6 +70,12 @@ const toDoReducer = (state, action) => {
             }));
             return categorys;
 
+        //////
+        case "get_toDoCategory":
+            const category = action.payload
+            console.log("12312", category)
+            return category;
+
 
         case "get_timers":
             const timers = action.payload.map((item) => ({
@@ -91,7 +97,7 @@ const toDoReducer = (state, action) => {
 
 
         default:
-            return state
+            return state || []
     }
 }
 
@@ -176,13 +182,28 @@ const postToDoPriority = (dispatch) => {
 
 
 const postToDoQuests = (dispatch) => {
-    return async (questsId, title, description, categoryId, priorityId, status, typeID, startDate, endDate, questType) => {
-        const response = await jsonServer.post("/api/Quests", { questsId, title, description, categoryId, priorityId, status, typeID, startDate, endDate, questType })
+    return async (questsId, title, description, categoryId, priorityId, status, typeID, startDate, endDate, questType, callback) => {
+      try {
+        const response = await jsonServer.post("/api/Quests", {
+          title,
+          description,
+          categoryId,
+          priorityId,
+          status,
+          typeID,
+          startDate,
+          endDate,
+          questType
+        })
+        console.log('Quest successfully created:', response.data);
         if (callback) {
-            callback()
+          callback()
         }
+      } catch (error) {
+        console.error('Error creating quest:', error)
+      }
     }
-}
+  }
 
 
 const getToDoPost = (dispatch) => {
@@ -196,7 +217,7 @@ const getToDoPost = (dispatch) => {
         try {
 
             const response = await jsonServer.get("/api/Quests")
-            console.log("Item:", response.data);
+            //  console.log("Item:", response.data);
             dispatch({ type: "get_toDoPosts", payload: response.data })
 
             /* if (dispatch) {
@@ -213,6 +234,20 @@ const getToDoPost = (dispatch) => {
 
     }
 }
+
+const getToDoCategory = (dispatch) => {
+    return async (id) => {
+        try {
+            console.log("girdi")
+            const response = await jsonServer.get(`/api/category/${id}`); 
+            dispatch({ type: "get_category", payload: response.data });
+            console.log("girdi3")
+            return response.data; // Kategoriyi döndür
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
 
 const editToDoPost = (dispatch) => {
     return async (id, title, description, callback) => {
@@ -232,7 +267,7 @@ const editToDoPost = (dispatch) => {
             if (callback) {
                 callback()
             }
-            
+
         } catch (error) {
             console.error("API isteğinde bir hata oluştu:", error.message)
         }
@@ -250,7 +285,7 @@ const deleteToDoPost = (dispatch) => {
 
 export const { Context, Provider } = createDataContext(
     toDoReducer,
-    { addToDoPost, deleteToDoPost, editToDoPost, getToDoPost, postToDoPost },
+    { addToDoPost, deleteToDoPost, editToDoPost, getToDoPost, postToDoPost, getToDoCategory, postToDoQuests },
     []
 )
 
